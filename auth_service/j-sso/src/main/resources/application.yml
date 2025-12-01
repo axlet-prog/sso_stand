@@ -16,3 +16,4 @@ spring:
     oauth2:
       authorizationserver:
         issuer-url: http://localhost:7777
+        introspectionEndpoint: /oauth2/token-info

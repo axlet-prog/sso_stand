@@ -12,5 +12,5 @@ import org.springframework.context.annotation.Configuration;
 public class AuthorizationServerProperties {
 
     private String issuerUrl;
-    // private String introspectionEndpoint;
+    private String introspectionEndpoint;
 }
