@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/finance_app.iml" filepath="$PROJECT_DIR$/.idea/finance_app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/auth_service/j-sso/j-sso.iml" filepath="$PROJECT_DIR$/auth_service/j-sso/j-sso.iml" />
     </modules>
   </component>
 </project>
