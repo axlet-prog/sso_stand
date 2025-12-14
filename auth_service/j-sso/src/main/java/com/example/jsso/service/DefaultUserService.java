@@ -41,7 +41,7 @@ public class DefaultUserService implements UserService {
     }
 
     private UserEntity saveUserFromYandex(OAuth2User userDto) {
-        String email = ((ArrayList<String>) userDto.getAttribute("emails")).get(0);
+        String email = ((ArrayList<String>) userDto.getAttribute("emails")).getFirst();
         if (email == null) {
             throw new AuthException(AuthErrorCode.EMAIL_IS_EMPTY);
         }

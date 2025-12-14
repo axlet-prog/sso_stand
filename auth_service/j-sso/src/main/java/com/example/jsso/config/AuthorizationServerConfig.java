@@ -1,5 +1,7 @@
 package com.example.jsso.config;
 
+import com.example.jsso.data.AuthorizedUser;
+import com.example.jsso.dto.IntrospectionPrincipal;
 import com.example.jsso.dto.TokenInfoDto;
 import com.example.jsso.properties.AuthorizationServerProperties;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,6 +16,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.server.ServletServerHttpResponse;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
@@ -58,7 +61,7 @@ public class AuthorizationServerConfig {
             .csrf(csrf -> csrf.ignoringRequestMatchers(endpointsMatcher))
             .exceptionHandling(
                 exceptions -> exceptions.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login")))
-            .apply(authorizationServerConfigurer);
+            .with(authorizationServerConfigurer, Customizer.withDefaults());
         return http.build();
     }
 
@@ -106,7 +109,7 @@ public class AuthorizationServerConfig {
 
     private void introspectionResponse(
         HttpServletRequest request, HttpServletResponse response, Authentication authentication)
-        throws IOException, IOException {
+        throws IOException {
         OAuth2TokenIntrospectionAuthenticationToken introspectionAuthenticationToken
             = (OAuth2TokenIntrospectionAuthenticationToken) authentication;
         TokenInfoDto.TokenInfoDtoBuilder tokenInfoDtoBuilder = TokenInfoDto.builder()
@@ -136,9 +139,13 @@ public class AuthorizationServerConfig {
                 Authentication attributeAuth = tokenAuth.getAttribute(
                     principalAttributeKey);                               // Если найден этот объект OAuth2Authorization, то получаем из него объект Authentication следующим образом
                 if (attributeAuth != null) {
-                    tokenInfoDtoBuilder                                                                                     // Если полученный объект Authentication не пуст, то заполняем данные в TokenInfoDto
-                        .principal(attributeAuth.getPrincipal())
-                        .authorities(authentication.getAuthorities());
+                    if (attributeAuth.getPrincipal() instanceof AuthorizedUser authorizedUser) {
+                        tokenInfoDtoBuilder.principal(IntrospectionPrincipal.build(authorizedUser));
+                    } else {
+                        throw new RuntimeException(
+                            "Principal class = " + attributeAuth.getPrincipal().getClass().getSimpleName()
+                            + " is not supported");
+                    }
                 }
             }
         }
