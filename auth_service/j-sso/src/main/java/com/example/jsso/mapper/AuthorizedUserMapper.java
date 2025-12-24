@@ -1,8 +1,8 @@
 package com.example.jsso.mapper;
 
 import com.example.jsso.constants.AuthProvider;
-import com.example.jsso.data.AuthorizedUser;
-import com.example.jsso.data.UserEntity;
+import com.example.jsso.dao.entity.UserEntity;
+import com.example.jsso.dto.AuthorizedUser;
 import java.util.Collections;
 import lombok.experimental.UtilityClass;
 

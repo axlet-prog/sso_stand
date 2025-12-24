@@ -1,4 +1,4 @@
-package com.example.jsso.data;
+package com.example.jsso.dto;
 
 import java.time.LocalDate;
 import java.util.Collection;

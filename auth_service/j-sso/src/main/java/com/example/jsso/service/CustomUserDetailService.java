@@ -1,7 +1,7 @@
 package com.example.jsso.service;
 
-import com.example.jsso.data.UserEntity;
-import com.example.jsso.data.UserRepository;
+import com.example.jsso.dao.entity.UserEntity;
+import com.example.jsso.dao.repository.UserRepository;
 import com.example.jsso.mapper.AuthorizedUserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;

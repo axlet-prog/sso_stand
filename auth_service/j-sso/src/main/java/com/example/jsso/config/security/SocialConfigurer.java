@@ -1,4 +1,4 @@
-package com.example.jsso.config;
+package com.example.jsso.config.security;
 
 import lombok.Setter;
 import lombok.experimental.Accessors;

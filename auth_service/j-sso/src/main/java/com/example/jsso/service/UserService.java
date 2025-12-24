@@ -1,8 +1,8 @@
 package com.example.jsso.service;
 
 import com.example.jsso.constants.AuthProvider;
-import com.example.jsso.data.AuthorizedUser;
-import com.example.jsso.data.UserEntity;
+import com.example.jsso.dao.entity.UserEntity;
+import com.example.jsso.dto.AuthorizedUser;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
 public interface UserService {

@@ -1,4 +1,4 @@
-package com.example.jsso.config;
+package com.example.jsso.config.security;
 
 import com.example.jsso.service.CustomOAuth2UserService;
 import com.example.jsso.service.CustomUserDetailService;
@@ -9,6 +9,7 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @EnableWebSecurity(debug = true)
@@ -18,12 +19,14 @@ public class SecurityConfig {
 
     private final CustomOAuth2UserService oAuth2UserService;
     private final CustomUserDetailService userDetailService;
+    private final PasswordEncoder passwordEncoder;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http.getSharedObject(AuthenticationManagerBuilder.class)
-            .userDetailsService(userDetailService);
+            .userDetailsService(userDetailService)
+            .passwordEncoder(passwordEncoder);
 
         http
             .with(
@@ -50,4 +53,6 @@ public class SecurityConfig {
     //         .build();
     //     return new InMemoryUserDetailsManager(user);
     // }
+
+
 }

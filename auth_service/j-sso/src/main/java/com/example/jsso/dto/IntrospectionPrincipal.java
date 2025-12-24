@@ -1,6 +1,5 @@
 package com.example.jsso.dto;
 
-import com.example.jsso.data.AuthorizedUser;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.UUID;

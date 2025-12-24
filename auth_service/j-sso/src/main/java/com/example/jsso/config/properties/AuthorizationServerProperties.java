@@ -1,4 +1,4 @@
-package com.example.jsso.properties;
+package com.example.jsso.config.properties;
 
 import lombok.Getter;
 import lombok.Setter;

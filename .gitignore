@@ -3,7 +3,9 @@
 *.iws
 *.iml
 *.ipr
-
+docker/
+.docker/
+test-files/
 HELP.md
 target/
 .mvn/wrapper/maven-wrapper.jar

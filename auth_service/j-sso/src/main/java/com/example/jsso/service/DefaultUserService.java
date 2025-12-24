@@ -2,15 +2,15 @@ package com.example.jsso.service;
 
 import com.example.jsso.constants.AuthErrorCode;
 import com.example.jsso.constants.AuthProvider;
-import com.example.jsso.data.AuthorizedUser;
-import com.example.jsso.data.UserEntity;
-import com.example.jsso.data.UserRepository;
+import com.example.jsso.dao.entity.UserEntity;
+import com.example.jsso.dao.repository.UserRepository;
+import com.example.jsso.dto.AuthorizedUser;
 import com.example.jsso.exception.AuthException;
 import com.example.jsso.mapper.AuthorizedUserMapper;
-import java.util.ArrayList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
@@ -22,10 +22,12 @@ public class DefaultUserService implements UserService {
     /**
      * Создание или обновление пользователя
      */
+    @Transactional
     @Override
     public UserEntity save(OAuth2User userDto, AuthProvider provider) {
+        userDto.getAttributes().forEach((k, v) -> System.out.println(k + ": " + v));
         return switch (provider) {
-            case GITHUB -> this.saveUserFromGithab(userDto);
+            case GITHUB -> this.saveUserFromGithub(userDto);
             case GOOGLE -> this.saveUserFromGoogle(userDto);
             case YANDEX -> this.saveUserFromYandex(userDto);
         };
@@ -34,6 +36,7 @@ public class DefaultUserService implements UserService {
     /**
      * Создание или обновление пользователя с последующим маппингом в сущность AuthorizedUser
      */
+    @Transactional
     @Override
     public AuthorizedUser saveAndMap(OAuth2User userDto, AuthProvider provider) {
         UserEntity entity = this.save(userDto, provider);
@@ -41,17 +44,15 @@ public class DefaultUserService implements UserService {
     }
 
     private UserEntity saveUserFromYandex(OAuth2User userDto) {
-        String email = ((ArrayList<String>) userDto.getAttribute("emails")).getFirst();
+        String email = userDto.getAttribute("default_email");
         if (email == null) {
             throw new AuthException(AuthErrorCode.EMAIL_IS_EMPTY);
         }
         UserEntity user = this.userRepository.findByEmail(email);
-        if (user
-            == null) {                                           // если пользователя не существует у нас, то создаём новую сущность UserEntity
+        if (user == null) {
             user = new UserEntity();
             user.setEmail(email);
-            user.setActive(
-                true);                                     // пока пусть все созданные пользователи будут активными
+            user.setActive(true);
         }
 
         String firstName = userDto.getAttribute("first_name");
@@ -69,24 +70,21 @@ public class DefaultUserService implements UserService {
     /**
      * Метод описывающий создание/обновление UserEntity на основе OAuth2User полученного из провайдера Github
      */
-    private UserEntity saveUserFromGithab(OAuth2User userDto) {
-        String email = userDto.getAttribute("email");           // пытаемся получить атрибут email
-        if (email
-            == null) {                                          // если данного атрибута нет или он пустой, то генерируем исключение с указанием того, что нет email
+    private UserEntity saveUserFromGithub(OAuth2User userDto) {
+        String email = userDto.getAttribute("email");
+        if (email == null) {
             throw new AuthException(AuthErrorCode.EMAIL_IS_EMPTY);
         }
-        UserEntity user = this.userRepository.findByEmail(
-            email);     // пытаемся найти пользователя в нашем хранилище по email
-        if (user
-            == null) {                                           // если пользователя не существует у нас, то создаём новую сущность UserEntity
+        UserEntity user = this.userRepository.findByEmail(email);
+        if (user == null) {
             user = new UserEntity();
             user.setEmail(email);
-            user.setActive(
-                true);                                     // пока пусть все созданные пользователи будут активными
+            user.setActive(true);
         }
 
-        if (userDto.getAttribute("name") != null) {             // получаем firstName, lastName и middleName
-            String[] splitted = ((String) userDto.getAttribute("name")).split(" ");
+        String nameString = userDto.getAttribute("name");
+        if (nameString != null) {
+            String[] splitted = nameString.split(" ");
             user.setFirstName(splitted[0]);
             if (splitted.length > 1) {
                 user.setSecondName(splitted[1]);
@@ -94,17 +92,15 @@ public class DefaultUserService implements UserService {
             if (splitted.length > 2) {
                 user.setMiddleName(splitted[2]);
             }
-        } else {                                                      // иначе устанавливаем в эти поля значение email
-            user.setFirstName(userDto.getAttribute(
-                "login"));   // конечно в реальных проектах так делать не надо, здесь это сделано для упрощения логики
+        } else {
+            user.setFirstName(userDto.getAttribute("login"));
             user.setSecondName(userDto.getAttribute("login"));
         }
 
-        if (userDto.getAttribute("avatar_url")
-            != null) {       // если есть аватар, то устанавливаем значение в поле avatarUrl
+        if (userDto.getAttribute("avatar_url") != null) {
             user.setAvatarUrl(userDto.getAttribute("avatar_url"));
         }
-        return userRepository.save(user);                             // сохраняем сущность UserEntity
+        return userRepository.save(user);
     }
 
     /**
