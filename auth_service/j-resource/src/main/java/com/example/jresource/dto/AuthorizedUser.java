@@ -2,14 +2,18 @@ package com.example.jresource.dto;
 
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
 @Getter
@@ -33,6 +37,15 @@ public class AuthorizedUser implements OAuth2User {
         if (principal == null) {
             return null;
         }
+
+        List<GrantedAuthority> authorities = Collections.emptyList();
+        if (principal.getAuthorities() != null) {
+            authorities = principal.getAuthorities()
+                .stream()
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
+        }
+
         return AuthorizedUser.builder()
             .id(principal.getId())
             .firstName(principal.getFirstName())
@@ -42,7 +55,7 @@ public class AuthorizedUser implements OAuth2User {
             .avatarUrl(principal.getAvatarUrl())
             .username(principal.getUsername())
             .email(principal.getEmail())
-            .authorities(principal.getAuthorities())
+            .authorities(authorities)
             .build();
     }
 

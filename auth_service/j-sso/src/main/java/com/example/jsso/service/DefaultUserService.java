@@ -3,10 +3,12 @@ package com.example.jsso.service;
 import com.example.jsso.constants.AuthErrorCode;
 import com.example.jsso.constants.AuthProvider;
 import com.example.jsso.dao.entity.UserEntity;
+import com.example.jsso.dao.repository.RoleRepository;
 import com.example.jsso.dao.repository.UserRepository;
 import com.example.jsso.dto.AuthorizedUser;
 import com.example.jsso.exception.AuthException;
 import com.example.jsso.mapper.AuthorizedUserMapper;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class DefaultUserService implements UserService {
 
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
 
     /**
      * Создание или обновление пользователя
@@ -48,12 +51,7 @@ public class DefaultUserService implements UserService {
         if (email == null) {
             throw new AuthException(AuthErrorCode.EMAIL_IS_EMPTY);
         }
-        UserEntity user = this.userRepository.findByEmail(email);
-        if (user == null) {
-            user = new UserEntity();
-            user.setEmail(email);
-            user.setActive(true);
-        }
+        UserEntity user = getEntityByEmail(email);
 
         String firstName = userDto.getAttribute("first_name");
         if (firstName != null) {
@@ -75,12 +73,7 @@ public class DefaultUserService implements UserService {
         if (email == null) {
             throw new AuthException(AuthErrorCode.EMAIL_IS_EMPTY);
         }
-        UserEntity user = this.userRepository.findByEmail(email);
-        if (user == null) {
-            user = new UserEntity();
-            user.setEmail(email);
-            user.setActive(true);
-        }
+        UserEntity user = getEntityByEmail(email);
 
         String nameString = userDto.getAttribute("name");
         if (nameString != null) {
@@ -111,12 +104,7 @@ public class DefaultUserService implements UserService {
         if (email == null) {
             throw new AuthException(AuthErrorCode.EMAIL_IS_EMPTY);
         }
-        UserEntity user = this.userRepository.findByEmail(email);
-        if (user == null) {
-            user = new UserEntity();
-            user.setEmail(email);
-            user.setActive(true);
-        }
+        UserEntity user = getEntityByEmail(email);
 
         if (userDto.getAttribute("given_name") != null) {
             user.setFirstName(userDto.getAttribute("given_name"));
@@ -131,5 +119,16 @@ public class DefaultUserService implements UserService {
         }
 
         return userRepository.save(user);
+    }
+
+    private UserEntity getEntityByEmail(String email) {
+        UserEntity user = userRepository.findByEmail(email);
+        if (user == null) {
+            user = new UserEntity();
+            user.setEmail(email);
+            user.setActive(true);
+            user.setRoles(List.of(roleRepository.getDefaultRole()));
+        }
+        return user;
     }
 }

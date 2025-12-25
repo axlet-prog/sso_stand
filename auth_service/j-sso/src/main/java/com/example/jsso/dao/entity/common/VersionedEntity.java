@@ -1,4 +1,4 @@
-package com.example.jsso.dao.entity;
+package com.example.jsso.dao.entity.common;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
