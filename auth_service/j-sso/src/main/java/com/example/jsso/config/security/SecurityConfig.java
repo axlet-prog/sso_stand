@@ -35,7 +35,16 @@ public class SecurityConfig {
             )
             .authorizeHttpRequests(authorize ->
                                        authorize
-                                           .requestMatchers("/error", "/favicon.ico", "/.well-known/**").permitAll()
+                                           .requestMatchers(
+                                               "/error",
+                                               "/favicon.ico",
+                                               "/.well-known/**"
+                                           ).permitAll()
+                                           .requestMatchers(
+                                               "/v3/api-docs",
+                                               "/swagger-ui/**",
+                                               "/v3/api-docs/swagger-config"
+                                           ).permitAll()
                                            .anyRequest().authenticated()
             )
             .oauth2Login(Customizer.withDefaults())

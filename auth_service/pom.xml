@@ -27,6 +27,7 @@
 
     <modules>
         <module>j-sso</module>
+        <module>j-swagger-ui</module>
     </modules>
 
     <dependencyManagement>

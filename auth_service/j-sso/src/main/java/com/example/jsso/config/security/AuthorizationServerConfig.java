@@ -48,7 +48,14 @@ public class AuthorizationServerConfig {
 
         RequestMatcher endpointsMatcher = authorizationServerConfigurer.getEndpointsMatcher();
         http.securityMatcher(endpointsMatcher)
-            .authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())
+            .authorizeHttpRequests(authorize ->
+                                       authorize
+                                           .requestMatchers(
+                                               "/v3/api-docs",
+                                               "/swagger-ui/**",
+                                               "/v3/api-docs/swagger-config"
+                                           ).permitAll()
+                                           .anyRequest().authenticated())
             .csrf(csrf -> csrf.ignoringRequestMatchers(endpointsMatcher))
             .exceptionHandling(
                 exceptions -> exceptions.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login")))

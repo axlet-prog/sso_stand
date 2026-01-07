@@ -14,6 +14,24 @@ spring:
     import: "file:.env[.properties]"
   application:
     name: j-sso
+
+  session:
+    timeout: 1800
+    redis:
+      flush-mode: on_save
+      namespace: j-sso:session
+      save-mode: on_set_attribute
+  data:
+    redis:
+      client-type: lettuce
+      database: 0
+      host: localhost
+      port: 6379
+      password: qwerty12345678
+      lettuce:
+        pool:
+          max-active: 16
+          max-idle: 8
   liquibase:
     enabled: true
     change-log: classpath:database/db.changelog.yaml
@@ -36,6 +54,8 @@ spring:
       authorizationserver:
         issuer-url: http://localhost:7777
         introspectionEndpoint: /oauth2/token-info
+        authorization-ttl-ms: 720000
+        authorization-consent-ttl-ms: 720000
       client:
         registration:
           github:
@@ -61,7 +81,21 @@ spring:
             token-uri: https://oauth.yandex.ru/token
             user-name-attribute: default_email
             userInfoUri: https://login.yandex.ru/info
-
+springdoc:
+  swagger-ui:
+    enabled: true
+    use-root-path: true
+    path: /swagger-ui
+    doc-expansion: none
+    config-url: /v3/api-docs/swagger-config
+    disable-swagger-default-url: true
+    operationsSorter: method
+    tagsSorter: alpha
+    url: /v3/api-docs
+    try-it-out-enabled: true
+    api-docs:
+      enabled: true
+      path: /v3/api-docs
 ---
 spring:
   config:
