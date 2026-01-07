@@ -1,4 +1,4 @@
-package com.example.jresource.config;
+package com.example.jresource.config.security;
 
 import com.example.jresource.CustomSpringTokenIntrospection;
 import com.example.jresource.OAuth2ResourceOpaqueProperties;
@@ -27,7 +27,9 @@ public class ResourceServerConfig {
             .sessionManagement(sessionConfig ->
                                    sessionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(authorize ->
-                                       authorize.anyRequest().authenticated()
+                                       authorize
+                                           .requestMatchers("/v3/api-docs").permitAll()
+                                           .anyRequest().authenticated()
             );
 
         http.oauth2ResourceServer(

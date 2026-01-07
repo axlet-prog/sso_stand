@@ -1,8 +1,11 @@
 package com.example.jsso.config;
 
+import com.example.jsso.config.properties.CorsProperties;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.info.BuildProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,33 +20,41 @@ import org.springframework.web.filter.CorsFilter;
 @EnableJpaRepositories(
     basePackages = "com.example.jsso.dao.repository"
 )
+@RequiredArgsConstructor
 public class RootAppConfig {
+
+    private final CorsProperties corsProperties;
+    private final BuildProperties buildProperties;
 
     @Bean
     public FilterRegistrationBean<CorsFilter> corsFilter() {
         log.debug("CREATING CORS FILTER");
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        CorsConfiguration config = new CorsConfiguration();
-
-        config.setAllowCredentials(true);
-
-        config.addAllowedOrigin("http://localhost:8080,http://127.0.0.1:8080");
-        config.addAllowedHeader(CorsConfiguration.ALL);
-        config.addAllowedMethod(CorsConfiguration.ALL);
-        config.addExposedHeader(CorsConfiguration.ALL);
-
-        source.registerCorsConfiguration("/**", config);
+        corsProperties.getConfigs().forEach(configProps -> {
+            CorsConfiguration config = new CorsConfiguration();
+            config.setAllowCredentials(configProps.allowCredentials());
+            config.addAllowedOrigin(configProps.allowedOrigins());
+            config.addAllowedOriginPattern(configProps.allowedOriginPatterns());
+            config.addAllowedHeader(configProps.allowedHeaders());
+            config.addExposedHeader(configProps.exposedHeaders());
+            config.addAllowedMethod(configProps.allowedMethods());
+            source.registerCorsConfiguration(configProps.pattern(), config);
+        });
         FilterRegistrationBean<CorsFilter> bean = new FilterRegistrationBean<>(new CorsFilter(source));
         bean.setOrder(Ordered.HIGHEST_PRECEDENCE);
         return bean;
     }
 
     @Bean
-    OpenAPI openAPI() {
+    public OpenAPI openAPI() {
+        String buildDate = buildProperties.get("build-date");
+        String buildInfo = "<h4>Build date: " + buildDate + "</h4>"
+                           + "<br>" + buildProperties.get("description");
         return new OpenAPI()
             .info(new Info()
-                      .title("SSO сервис")
-                      .version("0.0.1")
+                      .title(buildProperties.getName())
+                      .description(buildInfo)
+                      .version(buildProperties.getVersion())
             );
     }
 }
