@@ -4,10 +4,27 @@ server:
 logging:
   level:
     root: debug
+    org.springframework.security.web.FilterChainProxy: TRACE
+    org.springframework.security: TRACE
     org.apache.tomcat.util.net.NioEndpoint: error
     sun.rmi: error
     java.io: error
     javax.management: error
+
+springdoc:
+  auth-types:
+    auth-header-enabled: true
+    client-credentials-enabled: true
+    authorization-code-enabled: true
+  auth-oauth:
+    token-url: http://localhost:7777/oauth2/token
+    authorization_url: http://localhost:7777/oauth2/authorize
+    refresh-url: http://localhost:7777/oauth2/token
+  swagger-ui:
+    enabled: false
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
 
 spring:
   config:
@@ -84,33 +101,12 @@ spring:
   mvc:
     cors:
       configs:
-        - pattern: /v3/api-docs
-          allowed-origins: "http://localhost:7778"
-          allowed-headers: "*"
-          exposed-headers: "*"
-          allowed-methods: "*"
-          allow-credentials: true
         - pattern: /**
-          allowed-origins: "http://127.0.0.1:8080,http://localhost:8080"
+          allowed-origins: "http://127.0.0.1:8080,http://localhost:8080,http://localhost:7778"
           allowed-headers: "*"
           exposed-headers: "*"
           allowed-methods: "*"
           allow-credentials: true
-springdoc:
-  swagger-ui:
-    enabled: true
-    use-root-path: true
-    path: /swagger-ui
-    doc-expansion: none
-    config-url: /v3/api-docs/swagger-config
-    disable-swagger-default-url: true
-    operationsSorter: method
-    tagsSorter: alpha
-    url: /v3/api-docs
-    try-it-out-enabled: true
-    api-docs:
-      enabled: true
-      path: /v3/api-docs
 ---
 spring:
   config:
