@@ -1,5 +1,7 @@
 package com.example.jsso.config.security;
 
+import static com.example.jsso.config.security.SecurityConfig.PERMIT_ALL_PATTERNS;
+
 import com.example.jsso.config.properties.AuthorizationServerProperties;
 import com.example.jsso.dto.AuthorizedUser;
 import com.example.jsso.dto.IntrospectionPrincipal;
@@ -51,9 +53,7 @@ public class AuthorizationServerConfig {
             .authorizeHttpRequests(authorize ->
                                        authorize
                                            .requestMatchers(
-                                               "/v3/api-docs",
-                                               "/swagger-ui/**",
-                                               "/v3/api-docs/swagger-config"
+                                               PERMIT_ALL_PATTERNS
                                            ).permitAll()
                                            .anyRequest().authenticated())
             .csrf(csrf -> csrf.ignoringRequestMatchers(endpointsMatcher))

@@ -15,4 +15,6 @@ public class AuthorizationServerProperties {
     private String introspectionEndpoint;
     private Long authorizationTtlMs;
     private Long authorizationConsentTtlMs;
+    private String authenticationSuccessUrl;
+    private String customHandlerHeaderName;
 }

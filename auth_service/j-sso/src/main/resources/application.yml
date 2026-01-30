@@ -73,6 +73,8 @@ spring:
         introspectionEndpoint: /oauth2/token-info
         authorization-ttl-ms: 720000
         authorization-consent-ttl-ms: 720000
+        custom-handler-header-name: J-Sso-Next-Location
+        authentication-success-url: http://localhost:7777/
       client:
         registration:
           github:
@@ -99,14 +101,18 @@ spring:
             user-name-attribute: default_email
             userInfoUri: https://login.yandex.ru/info
   mvc:
+    static-path-pattern: /static/**
     cors:
       configs:
         - pattern: /**
           allowed-origins: "http://127.0.0.1:8080,http://localhost:8080,http://localhost:7778"
           allowed-headers: "*"
-          exposed-headers: "*"
+          exposed-headers: ${spring.security.oauth2.authorizationserver.custom-handler-header-name}
           allowed-methods: "*"
           allow-credentials: true
+  web:
+    resources:
+      static-locations: classpath:static
 ---
 spring:
   config:
