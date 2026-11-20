@@ -16,17 +16,15 @@
     <description>SSO service for multiple applications</description>
 
     <properties>
-        <node.version>v22.13.0</node.version>
-        <npm.version>10.9.0</npm.version>
+        <node.version>v26.13.1</node.version>
+        <npm.version>12.2.3</npm.version>
+        <frontend-maven-plugin.version>2.0.2</frontend-maven-plugin.version>
+        <springdoc.version>3.2.0</springdoc.version>
 
         <java.version>25</java.version>
-        <maven.compiler.source>${java.version}</maven.compiler.source>
-        <maven.compiler.target>${java.version}</maven.compiler.target>
         <build-date>${maven.build.timestamp}</build-date>
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
 
-        <build-client.phrase>disabled</build-client.phrase>
-        <copy-client-build.phrase>disabled</copy-client-build.phrase>
         <client-build-command.param>build-dev-java</client-build-command.param>
     </properties>
 
@@ -42,6 +40,11 @@
             </exclusions>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
         <!-- Log4j2 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -51,7 +54,7 @@
         <!-- Web -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
+            <artifactId>spring-boot-starter-webmvc</artifactId>
             <exclusions>
                 <exclusion>
                     <groupId>org.springframework.boot</groupId>
@@ -67,13 +70,13 @@
         </dependency>
 
         <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-oauth2-authorization-server</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security-oauth2-authorization-server</artifactId>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-oauth2-client</artifactId>
+            <artifactId>spring-boot-starter-security-oauth2-client</artifactId>
         </dependency>
 
         <dependency>
@@ -86,25 +89,14 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>${lombok.version}</version>
             <scope>provided</scope>
         </dependency>
 
         <!-- Test -->
         <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
+            <artifactId>spring-boot-starter-security-test</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
         <dependency>
@@ -114,11 +106,12 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
         </dependency>
 
         <dependency>
-            <groupId>org.liquibase</groupId>
-            <artifactId>liquibase-core</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-liquibase</artifactId>
         </dependency>
 
         <dependency>
@@ -127,14 +120,14 @@
         </dependency>
 
         <dependency>
-            <groupId>org.springframework.session</groupId>
-            <artifactId>spring-session-data-redis</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-session-data-redis</artifactId>
         </dependency>
 
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>2.8.15</version>
+            <version>${springdoc.version}</version>
         </dependency>
 
         <dependency>
@@ -145,21 +138,157 @@
     </dependencies>
 
     <profiles>
-        <!-- Профиль для сборки и копирования frontend приложения-->
+        <!-- Сборка frontend и включение результата в JAR -->
         <profile>
             <id>client-build-and-copy</id>
-            <properties>
-                <build-client.phrase>generate-resources</build-client.phrase>
-                <copy-client-build.phrase>generate-resources</copy-client-build.phrase>
-            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.github.eirslett</groupId>
+                        <artifactId>frontend-maven-plugin</artifactId>
+                        <version>${frontend-maven-plugin.version}</version>
+                        <executions>
+                            <!-- Установка Node и NPM для сборки фронта-->
+                            <execution>
+                                <id>install node and npm</id>
+                                <goals>
+                                    <goal>install-node-and-npm</goal>
+                                </goals>
+                                <phase>generate-resources</phase>
+                            </execution>
+                            <!-- Выполнение задачи установки зависимостей для фронта-->
+                            <execution>
+                                <id>npm ci</id>
+                                <goals>
+                                    <goal>npm</goal>
+                                </goals>
+                                <phase>generate-resources</phase>
+                                <configuration>
+                                    <workingDirectory>client</workingDirectory>
+                                    <arguments>ci</arguments>
+                                </configuration>
+                            </execution>
+                            <!-- Сборка фронта-->
+                            <execution>
+                                <id>npm build</id>
+                                <goals>
+                                    <goal>npm</goal>
+                                </goals>
+                                <phase>generate-resources</phase>
+                                <configuration>
+                                    <workingDirectory>client</workingDirectory>
+                                    <arguments>run ${client-build-command.param}</arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <nodeVersion>${node.version}</nodeVersion>
+                            <npmVersion>${npm.version}</npmVersion>
+                            <nodeDownloadRoot>https://nodejs.org/dist/</nodeDownloadRoot>
+                            <npmDownloadRoot>https://registry.npmjs.org/npm/-/</npmDownloadRoot>
+                            <installDirectory>.node</installDirectory>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <executions>
+                            <!-- Копирование index.html файла из client/dist в target/classes/templates-->
+                            <execution>
+                                <id>copy-templates</id>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.build.outputDirectory}/templates</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${basedir}/client/dist</directory>
+                                            <includes>
+                                                <include>index.html</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                            <!-- Копирование js, css, images и т.д. из client/dist в target/classes/static-->
+                            <execution>
+                                <id>copy-static</id>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.build.outputDirectory}/static</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${basedir}/client/dist</directory>
+                                            <includes>
+                                                <include>vite.svg</include>
+                                                <include>assets/**</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
-        <!-- Профиль для только копирования frontend приложения-->
+        <!-- Включение уже собранного client/dist в JAR -->
         <profile>
             <id>client-only-copy</id>
-            <properties>
-                <build-client.phrase>non</build-client.phrase>
-                <copy-client-build.phrase>generate-resources</copy-client-build.phrase>
-            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <executions>
+                            <!-- Копирование index.html файла из client/dist в target/classes/templates-->
+                            <execution>
+                                <id>copy-templates</id>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.build.outputDirectory}/templates</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${basedir}/client/dist</directory>
+                                            <includes>
+                                                <include>index.html</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                            <!-- Копирование js, css, images и т.д. из client/dist в target/classes/static-->
+                            <execution>
+                                <id>copy-static</id>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.build.outputDirectory}/static</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${basedir}/client/dist</directory>
+                                            <includes>
+                                                <include>vite.svg</include>
+                                                <include>assets/**</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
         <!-- Стандартный профиль сборки для dev среды, по умолчанию активен-->
         <profile>
@@ -191,101 +320,8 @@
         <finalName>${project.artifactId}</finalName>
         <plugins>
             <plugin>
-                <groupId>com.github.eirslett</groupId>
-                <artifactId>frontend-maven-plugin</artifactId>
-                <executions>
-                    <!-- Установка Node и NPM для сборки фронта-->
-                    <execution>
-                        <id>install node and npm</id>
-                        <goals>
-                            <goal>install-node-and-npm</goal>
-                        </goals>
-                        <phase>${build-client.phrase}</phase>
-                    </execution>
-                    <!-- Выполнение задачи установки зависимостей для фронта-->
-                    <execution>
-                        <id>npm install</id>
-                        <goals>
-                            <goal>npm</goal>
-                        </goals>
-                        <phase>${build-client.phrase}</phase>
-                        <configuration>
-                            <workingDirectory>client</workingDirectory>
-                            <arguments>install</arguments>
-                        </configuration>
-                    </execution>
-                    <!-- Сборка фронта-->
-                    <execution>
-                        <id>npm build</id>
-                        <goals>
-                            <goal>npm</goal>
-                        </goals>
-                        <phase>${build-client.phrase}</phase>
-                        <configuration>
-                            <workingDirectory>client</workingDirectory>
-                            <arguments>run ${client-build-command.param}</arguments>
-                        </configuration>
-                    </execution>
-                </executions>
-                <configuration>
-                    <nodeVersion>${node.version}</nodeVersion>
-                    <npmVersion>${npm.version}</npmVersion>
-                    <nodeDownloadRoot>https://nodejs.org/dist/</nodeDownloadRoot>
-                    <npmDownloadRoot>https://registry.npmjs.org/npm/-/</npmDownloadRoot>
-                    <installDirectory>.node</installDirectory>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <executions>
-                    <!-- Копирование index.html файла из client/dist в target/classes/templates-->
-                    <execution>
-                        <id>copy-templates</id>
-                        <phase>${copy-client-build.phrase}</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${basedir}/target/classes/templates</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${basedir}/client/dist</directory>
-                                    <includes>
-                                        <include>index.html</include>
-                                    </includes>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                    <!-- Копирование js, css, images и т.д. из client/dist в target/classes/static-->
-                    <execution>
-                        <id>copy-static</id>
-                        <phase>${copy-client-build.phrase}</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${basedir}/target/classes/static</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${basedir}/client/dist</directory>
-                                    <includes>
-                                        <include>vite.svg</include>
-                                        <include>assets/**</include>
-                                    </includes>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <finalName>${project.name}</finalName>
-                </configuration>
                 <executions>
                     <execution>
                         <goals>
@@ -302,29 +338,9 @@
             </plugin>
 
             <plugin>
-                <groupId>org.liquibase</groupId>
-                <artifactId>liquibase-maven-plugin</artifactId>
-                <configuration>
-                    <propertyFile>database/liquibase.properties</propertyFile>
-                    <promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
-                </configuration>
-                <!--                <executions>-->
-                <!--                    <execution>-->
-                <!--                        <id>liquibase-update</id>-->
-                <!--                        <phase>process-resources</phase>-->
-                <!--                        <goals>-->
-                <!--                            <goal>update</goal>-->
-                <!--                        </goals>-->
-                <!--                    </execution>-->
-                <!--                </executions>-->
-            </plugin>
-
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.projectlombok</groupId>
@@ -338,7 +354,10 @@
         <resources>
             <resource>
                 <directory>${project.basedir}/database</directory>
-                <targetPath>${project.build.directory}/classes/database</targetPath>
+                <targetPath>database</targetPath>
+                <excludes>
+                    <exclude>liquibase.properties</exclude>
+                </excludes>
             </resource>
             <resource>
                 <directory>${project.basedir}/src/main/resources</directory>

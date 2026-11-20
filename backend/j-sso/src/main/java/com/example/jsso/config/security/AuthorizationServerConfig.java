@@ -14,17 +14,17 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.oauth2.server.authorization.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.server.authorization.OAuth2Authorization;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.OAuth2TokenIntrospection;
 import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
 import org.springframework.security.oauth2.server.authorization.authentication.OAuth2TokenIntrospectionAuthenticationToken;
-import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
@@ -36,7 +36,7 @@ public class AuthorizationServerConfig {
 
     private final static String principalAttributeKey = "java.security.Principal";
 
-    private final MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter;
+    private final JacksonJsonHttpMessageConverter jacksonJsonHttpMessageConverter = new JacksonJsonHttpMessageConverter();
     private final OAuth2AuthorizationService oAuth2AuthorizationService;
     private final AuthorizationServerProperties authorizationServerProperties;
 
@@ -122,7 +122,7 @@ public class AuthorizationServerConfig {
         }
 
         ServletServerHttpResponse httpResponse = new ServletServerHttpResponse(response);
-        mappingJackson2HttpMessageConverter.write(
+        jacksonJsonHttpMessageConverter.write(
             tokenInfoDtoBuilder.build(), null,
             httpResponse
         );                         // Предращаем наш TokenInfoDto в json строку и отправляем её через ServletServerHttpResponse

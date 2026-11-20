@@ -22,7 +22,7 @@ public class SocialConfigurer extends AbstractHttpConfigurer<SocialConfigurer, H
     private String formLogin = "/login";
 
     @Override
-    public void init(HttpSecurity http) throws Exception {
+    public void init(HttpSecurity http) {
         http.oauth2Login(oauth2Login -> {
 
             if (oAuth2UserService != null) {

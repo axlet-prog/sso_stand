@@ -1,16 +1,14 @@
 package com.example.jsso.utils;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import java.io.IOException;
 import java.time.Instant;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.ValueSerializer;
 
-public class JsonInstantSerializer extends JsonSerializer<Instant> {
+public class JsonInstantSerializer extends ValueSerializer<Instant> {
 
     @Override
-    public void serialize(Instant instant, JsonGenerator jsonGenerator, SerializerProvider serializerProvider)
-        throws IOException {
+    public void serialize(Instant instant, JsonGenerator jsonGenerator, SerializationContext serializationContext) {
         if (instant != null) {
             jsonGenerator.writeNumber(instant.getEpochSecond());
         } else {

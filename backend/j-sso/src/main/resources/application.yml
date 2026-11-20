@@ -34,10 +34,11 @@ spring:
 
   session:
     timeout: 1800
-    redis:
-      flush-mode: on_save
-      namespace: j-sso:session
-      save-mode: on_set_attribute
+    data:
+      redis:
+        flush-mode: on_save
+        namespace: j-sso:session
+        save-mode: on_set_attribute
   data:
     redis:
       client-type: lettuce
@@ -52,7 +53,7 @@ spring:
   liquibase:
     enabled: true
     change-log: classpath:database/db.changelog.yaml
-    contexts: dev, prod
+    contexts: dev
   datasource:
     url: "jdbc:postgresql://localhost:5431/j-sso"
     username: "user"
@@ -118,13 +119,13 @@ spring:
   config:
     activate:
       on-profile: production
-    liquibase:
-      contexts: prod
+  liquibase:
+    contexts: prod
 
 ---
 spring:
   config:
     activate:
       on-profile: development
-    liquibase:
-      contexts: prod, dev
+  liquibase:
+    contexts: prod, dev

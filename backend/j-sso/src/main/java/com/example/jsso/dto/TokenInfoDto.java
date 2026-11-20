@@ -1,13 +1,13 @@
 package com.example.jsso.dto;
 
 import com.example.jsso.utils.JsonInstantSerializer;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.net.URL;
 import java.time.Instant;
 import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import tools.jackson.databind.annotation.JsonSerialize;
 
 @Getter
 @Setter
