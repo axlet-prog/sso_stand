@@ -9,15 +9,13 @@ Code, Refresh Token и Client Credentials. Сервер выдаёт opaque-то
 
 | Компонент | Назначение | Запуск |
 |---|---|---|
-| [j-sso](backend/j-sso) | Сервер аутентификации и OAuth2-авторизации | Compose: `j-sso-sever` |
+| [j-sso](backend/j-sso) | Сервер аутентификации и OAuth2-авторизации | Compose: `j-sso-server` |
 | [j-sso/client](backend/j-sso/client) | Интерфейс входа на React и Vite; Nginx раздаёт статику и проксирует запросы в SSO | Compose: `j-sso-client` |
 | [j-swagger-ui](backend/j-swagger-ui) | Общий Swagger UI для спецификаций API | Compose: `j-swagger-ui` |
 | PostgreSQL 18 | Пользователи, роли, OAuth2-клиенты | Compose: `sso-postgres` |
 | Redis 7.4 | HTTP-сессии, OAuth2-авторизации и согласия | Compose: `sso-redis` |
 | [j-resource](backend/j-resource) | Пример API с проверкой opaque-токенов через Nginx и SSO | Compose: `j-resource` |
 | [webclient_app](webclient_app) | Отдельное приложение на React и TypeScript для проверки Authorization Code | Вне Compose |
-
-Имя `j-sso-sever` приведено в точности как в [docker-compose.yml](docker-compose.yml).
 
 ```mermaid
 flowchart LR
@@ -141,7 +139,7 @@ Redirect URI OAuth2-приложения отдельно хранится в р
 
 | Переменная | Назначение |
 |---|---|
-| `SSO_BACKEND_URL` | Адрес backend для Nginx; в Docker по умолчанию `http://j-sso-sever:7777` |
+| `SSO_BACKEND_URL` | Адрес backend для Nginx; в Docker по умолчанию `http://j-sso-server:7777` |
 | `SSO_API_DOCS_URL` | Спецификация SSO для Swagger UI; в Compose `http://localhost:8080/v3/api-docs` |
 | `RESOURCE_API_DOCS_URL` | Спецификация примера API; по умолчанию `http://localhost:9001/v3/api-docs` |
 | `RESOURCE_SSO_CLIENT_ID`, `RESOURCE_SSO_CLIENT_SECRET` | Учётные данные J resource для introspection в Compose; dev-значения `test-client` / `test-client` |
@@ -201,7 +199,7 @@ curl -fsS http://localhost:7778/v3/api-docs/swagger-config
 Логи, пересборка одного сервиса и остановка стенда:
 
 ```bash
-docker compose logs --tail=100 j-sso-client j-sso-sever j-resource j-swagger-ui
+docker compose logs --tail=100 j-sso-client j-sso-server j-resource j-swagger-ui
 docker compose up -d --build --wait j-swagger-ui
 docker compose down
 ```

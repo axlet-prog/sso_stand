@@ -25,7 +25,7 @@ API доступен на `http://localhost:9001`, спецификация —
 Путь проверки токена внутри Docker:
 
 ```text
-j-resource -> http://j-sso-client/oauth2/token-info -> j-sso-sever:7777
+j-resource -> http://j-sso-client/oauth2/token-info -> j-sso-server:7777
 ```
 
 `j-sso-client` — имя контейнерного сервиса Nginx; внутри Docker он слушает порт
