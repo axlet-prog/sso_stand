@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.example</groupId>
+        <artifactId>backend</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>j-sso</artifactId>
+    <version>0.0.1</version>
+    <name>j-sso</name>
+    <description>SSO service for multiple applications</description>
+
+    <properties>
+        <node.version>v26.13.1</node.version>
+        <npm.version>12.2.3</npm.version>
+        <frontend-maven-plugin.version>2.0.2</frontend-maven-plugin.version>
+        <springdoc.version>3.2.0</springdoc.version>
+
+        <java.version>25</java.version>
+        <build-date>${maven.build.timestamp}</build-date>
+        <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
+
+        <client-build-command.param>build-dev-java</client-build-command.param>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <!-- Log4j2 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-log4j2</artifactId>
+        </dependency>
+
+        <!-- Web -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webmvc</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- Security -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security-oauth2-authorization-server</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security-oauth2-client</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.nimbusds</groupId>
+            <artifactId>nimbus-jose-jwt</artifactId>
+            <version>10.0.2</version>
+        </dependency>
+
+        <!-- Lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Test -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-liquibase</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-session-data-redis</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>${springdoc.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+
+    </dependencies>
+
+    <profiles>
+        <!-- Сборка frontend и включение результата в JAR -->
+        <profile>
+            <id>client-build-and-copy</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.github.eirslett</groupId>
+                        <artifactId>frontend-maven-plugin</artifactId>
+                        <version>${frontend-maven-plugin.version}</version>
+                        <executions>
+                            <!-- Установка Node и NPM для сборки фронта-->
+                            <execution>
+                                <id>install node and npm</id>
+                                <goals>
+                                    <goal>install-node-and-npm</goal>
+                                </goals>
+                                <phase>generate-resources</phase>
+                            </execution>
+                            <!-- Выполнение задачи установки зависимостей для фронта-->
+                            <execution>
+                                <id>npm ci</id>
+                                <goals>
+                                    <goal>npm</goal>
+                                </goals>
+                                <phase>generate-resources</phase>
+                                <configuration>
+                                    <workingDirectory>client</workingDirectory>
+                                    <arguments>ci</arguments>
+                                </configuration>
+                            </execution>
+                            <!-- Сборка фронта-->
+                            <execution>
+                                <id>npm build</id>
+                                <goals>
+                                    <goal>npm</goal>
+                                </goals>
+                                <phase>generate-resources</phase>
+                                <configuration>
+                                    <workingDirectory>client</workingDirectory>
+                                    <arguments>run ${client-build-command.param}</arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <nodeVersion>${node.version}</nodeVersion>
+                            <npmVersion>${npm.version}</npmVersion>
+                            <nodeDownloadRoot>https://nodejs.org/dist/</nodeDownloadRoot>
+                            <npmDownloadRoot>https://registry.npmjs.org/npm/-/</npmDownloadRoot>
+                            <installDirectory>.node</installDirectory>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <executions>
+                            <!-- Копирование index.html файла из client/dist в target/classes/templates-->
+                            <execution>
+                                <id>copy-templates</id>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.build.outputDirectory}/templates</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${basedir}/client/dist</directory>
+                                            <includes>
+                                                <include>index.html</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                            <!-- Копирование js, css, images и т.д. из client/dist в target/classes/static-->
+                            <execution>
+                                <id>copy-static</id>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.build.outputDirectory}/static</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${basedir}/client/dist</directory>
+                                            <includes>
+                                                <include>vite.svg</include>
+                                                <include>assets/**</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <!-- Включение уже собранного client/dist в JAR -->
+        <profile>
+            <id>client-only-copy</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <executions>
+                            <!-- Копирование index.html файла из client/dist в target/classes/templates-->
+                            <execution>
+                                <id>copy-templates</id>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.build.outputDirectory}/templates</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${basedir}/client/dist</directory>
+                                            <includes>
+                                                <include>index.html</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                            <!-- Копирование js, css, images и т.д. из client/dist в target/classes/static-->
+                            <execution>
+                                <id>copy-static</id>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.build.outputDirectory}/static</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${basedir}/client/dist</directory>
+                                            <includes>
+                                                <include>vite.svg</include>
+                                                <include>assets/**</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <!-- Стандартный профиль сборки для dev среды, по умолчанию активен-->
+        <profile>
+            <id>dev</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <client-build-command.param>build-dev-java</client-build-command.param>
+            </properties>
+        </profile>
+        <!-- Стандартный профиль сборки для test среды-->
+        <profile>
+            <id>test</id>
+            <properties>
+                <client-build-command.param>build-test</client-build-command.param>
+            </properties>
+        </profile>
+        <!-- Стандартный профиль сборки для production среды-->
+        <profile>
+            <id>prod</id>
+            <properties>
+                <client-build-command.param>build-prod</client-build-command.param>
+            </properties>
+        </profile>
+    </profiles>
+
+    <build>
+        <finalName>${project.artifactId}</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>build-info</goal>
+                        </goals>
+                        <configuration>
+                            <additionalProperties>
+                                <description>${project.description}</description>
+                                <build-date>${build-date}</build-date>
+                            </additionalProperties>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+        </plugins>
+        <resources>
+            <resource>
+                <directory>${project.basedir}/database</directory>
+                <targetPath>database</targetPath>
+                <excludes>
+                    <exclude>liquibase.properties</exclude>
+                </excludes>
+            </resource>
+            <resource>
+                <directory>${project.basedir}/src/main/resources</directory>
+            </resource>
+        </resources>
+    </build>
+
+
+</project>
