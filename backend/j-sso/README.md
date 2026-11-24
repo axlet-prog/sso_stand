@@ -47,7 +47,7 @@ docker compose -f ../../docker-compose.yml ps
   перенаправляет на frontend.
 
 ```bash
-docker compose -f ../../docker-compose.yml logs --tail=100 j-sso-client j-sso-sever
+docker compose -f ../../docker-compose.yml logs --tail=100 j-sso-client j-sso-server
 docker compose -f ../../docker-compose.yml down
 ```
 
@@ -97,7 +97,7 @@ java -jar target/j-sso.jar
 | `CORS_ALLOWED_ORIGINS`                                     | Разрешённые origins через запятую                          |
 
 Адрес backend для Nginx задаёт **`SSO_BACKEND_URL`**: дефолт
-`http://j-sso-sever:7777`. Переопределяйте его в окружении команды Compose или
+`http://j-sso-server:7777`. Переопределяйте его в окружении команды Compose или
 корневом `.env`; после изменения достаточно пересоздать frontend без пересборки.
 
 Callback у каждого внешнего OAuth-провайдера:

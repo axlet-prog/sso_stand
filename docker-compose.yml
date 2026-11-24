@@ -5,11 +5,11 @@ services:
       context: ./backend/j-sso/client
     restart: unless-stopped
     environment:
-      SSO_BACKEND_URL: ${SSO_BACKEND_URL:-http://j-sso-sever:7777}
+      SSO_BACKEND_URL: ${SSO_BACKEND_URL:-http://j-sso-server:7777}
     ports:
       - "127.0.0.1:8080:80"
 
-  j-sso-sever:
+  j-sso-server:
     build:
       context: ./backend
       dockerfile: j-sso/Dockerfile

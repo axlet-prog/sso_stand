@@ -18,7 +18,7 @@ COPY . ./
 RUN npm run build-prod
 
 FROM nginx:${NGINX_VERSION}-alpine
-ENV SSO_BACKEND_URL=http://j-sso-sever:7777 \
+ENV SSO_BACKEND_URL=http://j-sso-server:7777 \
     NGINX_ENVSUBST_FILTER=^SSO_BACKEND_URL$
 COPY nginx.conf.template /etc/nginx/templates/default.conf.template
 COPY --from=build /app/dist/ /usr/share/nginx/html/static/
