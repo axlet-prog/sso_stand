@@ -47,6 +47,49 @@ services:
       start_period: 60s
       retries: 5
 
+  j-resource:
+    build:
+      context: ./backend
+      dockerfile: j-resource/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:9001:9001"
+    environment:
+      SERVER_PORT: "9001"
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_OPAQUETOKEN_INTROSPECTIONURI: http://j-sso-client/oauth2/token-info
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_OPAQUETOKEN_CLIENTID: ${RESOURCE_SSO_CLIENT_ID:-test-client}
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_OPAQUETOKEN_CLIENTSECRET: ${RESOURCE_SSO_CLIENT_SECRET:-test-client}
+      SPRINGDOC_AUTHOAUTH_TOKENURL: http://localhost:8080/oauth2/token
+      SPRINGDOC_AUTHOAUTH_AUTHORIZATIONURL: http://localhost:8080/oauth2/authorize
+      SPRINGDOC_AUTHOAUTH_REFRESHURL: http://localhost:8080/oauth2/token
+    depends_on:
+      j-sso-client:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "--show-error", "http://127.0.0.1:9001/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      start_period: 30s
+      retries: 5
+
+  j-swagger-ui:
+    build:
+      context: ./backend
+      dockerfile: j-swagger-ui/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:7778:7778"
+    environment:
+      SERVER_PORT: "7778"
+      SSO_API_DOCS_URL: ${SSO_API_DOCS_URL:-http://localhost:8080/v3/api-docs}
+      RESOURCE_API_DOCS_URL: ${RESOURCE_API_DOCS_URL:-http://localhost:9001/v3/api-docs}
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "--show-error", "http://127.0.0.1:7778/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      start_period: 30s
+      retries: 5
+
   sso-postgres:
     image: postgres:18
     container_name: sso-postgres

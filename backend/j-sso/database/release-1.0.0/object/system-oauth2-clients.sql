@@ -21,18 +21,30 @@ create table sso.system_oauth2_clients
     constraint system_oauth2_clients_pk primary key (system_client_id)
 );
 
-comment on table sso.system_oauth2_clients is 'OAuth2 клиенты системы';
-comment on column sso.system_oauth2_clients.client_id is 'ID клиента';
-comment on column sso.system_oauth2_clients.client_id_issued_at is 'Дата создания записи';
-comment on column sso.system_oauth2_clients.client_secret is 'Пароль';
-comment on column sso.system_oauth2_clients.client_secret_expires_at is 'Срок действия пароля';
-comment on column sso.system_oauth2_clients.client_name is 'Наименование клиента';
-comment on column sso.system_oauth2_clients.client_authentication_methods is 'Доступные методы аутентификации';
-comment on column sso.system_oauth2_clients.authorization_grant_types is 'Типы доступа';
-comment on column sso.system_oauth2_clients.redirect_uris is 'Доступные URL-ы перенаправления';
-comment on column sso.system_oauth2_clients.scopes is 'Области доступа';
-comment on column sso.system_oauth2_clients.client_settings is 'Дополнительные настройки клиента';
-comment on column sso.system_oauth2_clients.token_settings is 'Дополнительные настройки токена';
+comment
+on table sso.system_oauth2_clients is 'OAuth2 клиенты системы';
+comment
+on column sso.system_oauth2_clients.client_id is 'ID клиента';
+comment
+on column sso.system_oauth2_clients.client_id_issued_at is 'Дата создания записи';
+comment
+on column sso.system_oauth2_clients.client_secret is 'Пароль';
+comment
+on column sso.system_oauth2_clients.client_secret_expires_at is 'Срок действия пароля';
+comment
+on column sso.system_oauth2_clients.client_name is 'Наименование клиента';
+comment
+on column sso.system_oauth2_clients.client_authentication_methods is 'Доступные методы аутентификации';
+comment
+on column sso.system_oauth2_clients.authorization_grant_types is 'Типы доступа';
+comment
+on column sso.system_oauth2_clients.redirect_uris is 'Доступные URL-ы перенаправления';
+comment
+on column sso.system_oauth2_clients.scopes is 'Области доступа';
+comment
+on column sso.system_oauth2_clients.client_settings is 'Дополнительные настройки клиента';
+comment
+on column sso.system_oauth2_clients.token_settings is 'Дополнительные настройки токена';
 
 --changeset axlet:system-oauth2-clients-3
 create unique index idx_system_oauth2_clients_n1 on sso.system_oauth2_clients (client_id);

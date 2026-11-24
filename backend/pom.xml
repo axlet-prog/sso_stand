@@ -23,6 +23,7 @@
 
     <modules>
         <module>j-sso</module>
+        <module>j-resource</module>
         <module>j-swagger-ui</module>
     </modules>
 

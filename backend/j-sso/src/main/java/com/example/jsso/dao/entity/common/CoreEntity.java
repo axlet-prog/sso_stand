@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public interface CoreEntity<Id extends Serializable> extends Serializable {
 
-    Id getId();
+	Id getId();
 
-    void setId(Id id);
+	void setId(Id id);
 }

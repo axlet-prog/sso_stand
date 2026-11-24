@@ -11,10 +11,10 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "spring.security.oauth2.authorizationserver")
 public class AuthorizationServerProperties {
 
-    private String issuerUrl;
-    private String introspectionEndpoint;
-    private Long authorizationTtlMs;
-    private Long authorizationConsentTtlMs;
-    private String authenticationSuccessUrl;
-    private String customHandlerHeaderName;
+	private String issuerUrl;
+	private String introspectionEndpoint;
+	private Long authorizationTtlMs;
+	private Long authorizationConsentTtlMs;
+	private String authenticationSuccessUrl;
+	private String customHandlerHeaderName;
 }

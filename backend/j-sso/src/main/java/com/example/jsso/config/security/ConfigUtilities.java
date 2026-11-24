@@ -19,45 +19,45 @@ import org.springframework.security.oauth2.server.authorization.OAuth2Authorizat
 @RequiredArgsConstructor
 public class ConfigUtilities {
 
-    private final AuthorizationServerProperties properties;
+	private final AuthorizationServerProperties properties;
 
-    @Bean
-    public RedisTemplate<String, OAuth2Authorization> redisTemplateOAuth2AuthorizationService(
-        RedisConnectionFactory connectionFactory
-    ) {
-        RedisTemplate<String, OAuth2Authorization> redisTemplate = new RedisTemplate<>();
-        redisTemplate.setConnectionFactory(connectionFactory);
-        redisTemplate.setKeySerializer(new StringRedisSerializer());
-        return redisTemplate;
-    }
+	@Bean
+	public RedisTemplate<String, OAuth2Authorization> redisTemplateOAuth2AuthorizationService(
+			RedisConnectionFactory connectionFactory
+	) {
+		RedisTemplate<String, OAuth2Authorization> redisTemplate = new RedisTemplate<>();
+		redisTemplate.setConnectionFactory(connectionFactory);
+		redisTemplate.setKeySerializer(new StringRedisSerializer());
+		return redisTemplate;
+	}
 
-    @Bean
-    public RedisTemplate<String, OAuth2AuthorizationConsent> redisTemplateOAuth2AuthorizationConsent(
-        RedisConnectionFactory connectionFactory
-    ) {
-        RedisTemplate<String, OAuth2AuthorizationConsent> redisTemplate = new RedisTemplate<>();
-        redisTemplate.setConnectionFactory(connectionFactory);
-        redisTemplate.setKeySerializer(new StringRedisSerializer());
-        return redisTemplate;
-    }
+	@Bean
+	public RedisTemplate<String, OAuth2AuthorizationConsent> redisTemplateOAuth2AuthorizationConsent(
+			RedisConnectionFactory connectionFactory
+	) {
+		RedisTemplate<String, OAuth2AuthorizationConsent> redisTemplate = new RedisTemplate<>();
+		redisTemplate.setConnectionFactory(connectionFactory);
+		redisTemplate.setKeySerializer(new StringRedisSerializer());
+		return redisTemplate;
+	}
 
-    @Bean
-    public RedisOAuth2AuthorizationConsentService oAuth2AuthorizationConsent(
-        RedisTemplate<String, OAuth2AuthorizationConsent> redisTemplate
-    ) {
-        return new RedisOAuth2AuthorizationConsentService(redisTemplate, properties.getAuthorizationConsentTtlMs());
-    }
+	@Bean
+	public RedisOAuth2AuthorizationConsentService oAuth2AuthorizationConsent(
+			RedisTemplate<String, OAuth2AuthorizationConsent> redisTemplate
+	) {
+		return new RedisOAuth2AuthorizationConsentService(redisTemplate, properties.getAuthorizationConsentTtlMs());
+	}
 
 
-    @Bean
-    public OAuth2AuthorizationService oAuth2AuthorizationService(
-        RedisTemplate<String, OAuth2Authorization> redisTemplate
-    ) {
-        return new RedisOAuth2AuthorizationService(redisTemplate, properties.getAuthorizationTtlMs());
-    }
+	@Bean
+	public OAuth2AuthorizationService oAuth2AuthorizationService(
+			RedisTemplate<String, OAuth2Authorization> redisTemplate
+	) {
+		return new RedisOAuth2AuthorizationService(redisTemplate, properties.getAuthorizationTtlMs());
+	}
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(10);
-    }
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder(10);
+	}
 }

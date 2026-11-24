@@ -14,15 +14,15 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class CustomUserDetailService implements UserDetailsService {
 
-    private final UserRepository userRepository;
+	private final UserRepository userRepository;
 
-    @Override
-    @Transactional(readOnly = true)
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserEntity entity = userRepository.findByEmail(username);
-        if (entity == null) {
-            throw new UsernameNotFoundException("User with username = " + username + " not found");
-        }
-        return AuthorizedUserMapper.map(entity, null);
-    }
+	@Override
+	@Transactional(readOnly = true)
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		UserEntity entity = userRepository.findByEmail(username);
+		if (entity == null) {
+			throw new UsernameNotFoundException("User with username = " + username + " not found");
+		}
+		return AuthorizedUserMapper.map(entity, null);
+	}
 }

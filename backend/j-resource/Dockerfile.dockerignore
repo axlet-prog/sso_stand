@@ -1,0 +1,15 @@
+# Paths are relative to the Compose build context: backend/.
+**
+!pom.xml
+!j-resource/
+!j-resource/pom.xml
+!j-resource/mvnw
+!j-resource/.mvn/
+!j-resource/.mvn/**
+!j-resource/src/
+!j-resource/src/**
+
+**/.env
+**/.env.*
+**/target
+**/node_modules

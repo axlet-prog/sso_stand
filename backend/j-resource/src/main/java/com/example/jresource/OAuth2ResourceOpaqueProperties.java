@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "spring.security.oauth2.resourceserver.opaquetoken")
 public class OAuth2ResourceOpaqueProperties {
 
-    private String introspectionUri;
-    private String clientId;
-    private String clientSecret;
+	private String introspectionUri;
+	private String clientId;
+	private String clientSecret;
 }

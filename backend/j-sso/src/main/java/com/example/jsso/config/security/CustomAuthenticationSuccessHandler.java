@@ -17,44 +17,44 @@ import org.springframework.security.web.savedrequest.SavedRequest;
 @RequiredArgsConstructor
 public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
-    /**
-     * URL до главной страницы SSO
-     **/
-    private final String locationUrl;
+	/**
+	 * URL до главной страницы SSO
+	 **/
+	private final String locationUrl;
 
-    /**
-     * Имя заголовка, в котором будет передан URL для перенаправления
-     **/
-    private final String headerName;
+	/**
+	 * Имя заголовка, в котором будет передан URL для перенаправления
+	 **/
+	private final String headerName;
 
 
-    private final RequestCache requestCache = new HttpSessionRequestCache();
+	private final RequestCache requestCache = new HttpSessionRequestCache();
 
-    @Override
-    public void onAuthenticationSuccess(
-        HttpServletRequest request,
-        HttpServletResponse response,
-        Authentication authentication
-    ) {
-        SavedRequest savedRequest = this.requestCache.getRequest(request, response);
-        if (savedRequest == null) {
-            response.setHeader(headerName, locationUrl);
-        } else {
-            this.requestCache.removeRequest(request, response);
-            this.clearAuthenticationAttributes(request);
-            String targetUrl = savedRequest.getRedirectUrl();
-            response.setHeader(headerName, targetUrl);
-        }
-    }
+	@Override
+	public void onAuthenticationSuccess(
+			HttpServletRequest request,
+			HttpServletResponse response,
+			Authentication authentication
+	) {
+		SavedRequest savedRequest = this.requestCache.getRequest(request, response);
+		if (savedRequest == null) {
+			response.setHeader(headerName, locationUrl);
+		} else {
+			this.requestCache.removeRequest(request, response);
+			this.clearAuthenticationAttributes(request);
+			String targetUrl = savedRequest.getRedirectUrl();
+			response.setHeader(headerName, targetUrl);
+		}
+	}
 
-    /**
-     * Удаляем временные атрибуты процесса аутентификации.
-     * Решение позаимствовано из {@link org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler}
-     */
-    private void clearAuthenticationAttributes(HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        if (session != null) {
-            session.removeAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
-        }
-    }
+	/**
+	 * Удаляем временные атрибуты процесса аутентификации.
+	 * Решение позаимствовано из {@link org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler}
+	 */
+	private void clearAuthenticationAttributes(HttpServletRequest request) {
+		HttpSession session = request.getSession(false);
+		if (session != null) {
+			session.removeAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
+		}
+	}
 }
