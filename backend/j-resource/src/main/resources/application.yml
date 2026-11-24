@@ -1,6 +1,16 @@
 server:
   port: ${SERVER_PORT:9001}
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
+      show-components: never
+
 logging:
   level:
     root: ${LOGGING_LEVEL_ROOT:DEBUG}
@@ -13,9 +23,9 @@ springdoc:
     client-credentials-enabled: true
     authorization-code-enabled: true
   auth-oauth:
-    token-url: ${SPRINGDOC_AUTHOAUTH_TOKENURL:http://localhost:7777/oauth2/token}
-    authorization_url: ${SPRINGDOC_AUTHOAUTH_AUTHORIZATIONURL:http://localhost:7777/oauth2/authorize}
-    refresh-url: ${SPRINGDOC_AUTHOAUTH_REFRESHURL:http://localhost:7777/oauth2/token}
+    token-url: ${SPRINGDOC_AUTHOAUTH_TOKENURL:http://localhost:8080/oauth2/token}
+    authorization_url: ${SPRINGDOC_AUTHOAUTH_AUTHORIZATIONURL:http://localhost:8080/oauth2/authorize}
+    refresh-url: ${SPRINGDOC_AUTHOAUTH_REFRESHURL:http://localhost:8080/oauth2/token}
   swagger-ui:
     enabled: false
   api-docs:
@@ -40,4 +50,4 @@ spring:
         opaquetoken:
           client-id: ${SPRING_SECURITY_OAUTH2_RESOURCESERVER_OPAQUETOKEN_CLIENTID:test-client}
           client-secret: ${SPRING_SECURITY_OAUTH2_RESOURCESERVER_OPAQUETOKEN_CLIENTSECRET:test-client}
-          introspection-uri: ${SPRING_SECURITY_OAUTH2_RESOURCESERVER_OPAQUETOKEN_INTROSPECTIONURI:http://localhost:7777/oauth2/token-info}
+          introspection-uri: ${SPRING_SECURITY_OAUTH2_RESOURCESERVER_OPAQUETOKEN_INTROSPECTIONURI:http://localhost:8080/oauth2/token-info}

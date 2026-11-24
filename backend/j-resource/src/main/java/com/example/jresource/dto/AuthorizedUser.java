@@ -1,20 +1,13 @@
 package com.example.jresource.dto;
 
-import java.time.LocalDate;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.stream.Collectors;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+
+import java.time.LocalDate;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -23,55 +16,55 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 @NoArgsConstructor
 public class AuthorizedUser implements OAuth2User {
 
-    private UUID id;
-    private String firstName;
-    private String secondName;
-    private String middleName;
-    private LocalDate birthday;
-    private String avatarUrl;
-    private String username;
-    private String email;
-    private Collection<? extends GrantedAuthority> authorities;
+	private UUID id;
+	private String firstName;
+	private String secondName;
+	private String middleName;
+	private LocalDate birthday;
+	private String avatarUrl;
+	private String username;
+	private String email;
+	private Collection<? extends GrantedAuthority> authorities;
 
-    public static AuthorizedUser build(IntrospectionPrincipal principal) {
-        if (principal == null) {
-            return null;
-        }
+	public static AuthorizedUser build(IntrospectionPrincipal principal) {
+		if (principal == null) {
+			return null;
+		}
 
-        List<GrantedAuthority> authorities = Collections.emptyList();
-        if (principal.getAuthorities() != null) {
-            authorities = principal.getAuthorities()
-                .stream()
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
-        }
+		List<GrantedAuthority> authorities = Collections.emptyList();
+		if (principal.getAuthorities() != null) {
+			authorities = principal.getAuthorities()
+					.stream()
+					.map(SimpleGrantedAuthority::new)
+					.collect(Collectors.toList());
+		}
 
-        return AuthorizedUser.builder()
-            .id(principal.getId())
-            .firstName(principal.getFirstName())
-            .secondName(principal.getSecondName())
-            .middleName(principal.getMiddleName())
-            .birthday(principal.getBirthday())
-            .avatarUrl(principal.getAvatarUrl())
-            .username(principal.getUsername())
-            .email(principal.getEmail())
-            .authorities(authorities)
-            .build();
-    }
+		return AuthorizedUser.builder()
+				.id(principal.getId())
+				.firstName(principal.getFirstName())
+				.secondName(principal.getSecondName())
+				.middleName(principal.getMiddleName())
+				.birthday(principal.getBirthday())
+				.avatarUrl(principal.getAvatarUrl())
+				.username(principal.getUsername())
+				.email(principal.getEmail())
+				.authorities(authorities)
+				.build();
+	}
 
 
-    @Override
-    public Map<String, Object> getAttributes() {
-        return null;
-    }
+	@Override
+	public Map<String, Object> getAttributes() {
+		return null;
+	}
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.authorities;
-    }
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		return this.authorities;
+	}
 
-    @Override
-    public String getName() {
-        return this.username;
-    }
+	@Override
+	public String getName() {
+		return this.username;
+	}
 }

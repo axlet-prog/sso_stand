@@ -9,15 +9,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class TestController {
 
-    @GetMapping("/test")
-    public Object test() {
-        return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    }
+	@GetMapping("/test")
+	public Object test() {
+		return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+	}
 
-    @GetMapping("/test-auth")
-    @PreAuthorize("hasAnyAuthority('GET_OWN_DATA')")
-    public String testAuth() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return authentication.getName();
-    }
+	@GetMapping("/test-auth")
+	@PreAuthorize("hasAnyAuthority('GET_OWN_DATA')")
+	public String testAuth() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		return authentication.getName();
+	}
 }

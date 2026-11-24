@@ -4,6 +4,16 @@ spring:
 server:
   port: ${SERVER_PORT:7778}
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
+      show-components: never
+
 
 springdoc:
   swagger-ui:
@@ -14,6 +24,7 @@ springdoc:
     operationsSorter: method
     tagsSorter: alpha
     try-it-out-enabled: true
+    urls-primary-name: SSO Server
     urls:
       - name: SSO Server
         url: ${SSO_API_DOCS_URL:http://localhost:7777/v3/api-docs}

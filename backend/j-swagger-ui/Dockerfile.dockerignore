@@ -1,0 +1,15 @@
+# Paths are relative to the Compose build context: backend/.
+**
+!pom.xml
+!j-swagger-ui/
+!j-swagger-ui/pom.xml
+!j-swagger-ui/mvnw
+!j-swagger-ui/.mvn/
+!j-swagger-ui/.mvn/**
+!j-swagger-ui/src/
+!j-swagger-ui/src/**
+
+**/.env
+**/.env.*
+**/target
+**/node_modules

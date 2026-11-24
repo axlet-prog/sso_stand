@@ -86,18 +86,8 @@ public class SecurityConfig {
 		return http.build();
 	}
 
-	// @Bean
-	// public UserDetailsService userDetailsService() {
-	//     UserDetails user = User.builder()
-	//         .username("admin")
-	//         .password("{noop}password")
-	//         .roles("USER")
-	//         .build();
-	//     return new InMemoryUserDetailsManager(user);
-	// }
 	@PostConstruct
 	private void initializeHandlers() {
-		// создаем кастомный AuthenticationSuccessHandler для формы логина
 		this.loginRequestSuccessHandler = new CustomAuthenticationSuccessHandler(
 				authorizationServerProperties.getAuthenticationSuccessUrl(),
 				authorizationServerProperties.getCustomHandlerHeaderName()

@@ -15,29 +15,29 @@ import org.springframework.security.web.authentication.SavedRequestAwareAuthenti
 @Accessors(chain = true, fluent = true)
 public class SocialConfigurer extends AbstractHttpConfigurer<SocialConfigurer, HttpSecurity> {
 
-    private OAuth2UserService<OAuth2UserRequest, OAuth2User> oAuth2UserService;
+	private OAuth2UserService<OAuth2UserRequest, OAuth2User> oAuth2UserService;
 
-    private AuthenticationFailureHandler failureHandler;
-    private AuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
-    private String formLogin = "/login";
+	private AuthenticationFailureHandler failureHandler;
+	private AuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
+	private String formLogin = "/login";
 
-    @Override
-    public void init(HttpSecurity http) {
-        http.oauth2Login(oauth2Login -> {
+	@Override
+	public void init(HttpSecurity http) {
+		http.oauth2Login(oauth2Login -> {
 
-            if (oAuth2UserService != null) {
-                oauth2Login.userInfoEndpoint(customizer -> {
-                    customizer.userService(oAuth2UserService);
-                });
-            }
+			if (oAuth2UserService != null) {
+				oauth2Login.userInfoEndpoint(customizer -> {
+					customizer.userService(oAuth2UserService);
+				});
+			}
 
-            if (this.successHandler != null) {
-                oauth2Login.successHandler(this.successHandler);
-            }
-            if (this.failureHandler != null) {
-                oauth2Login.failureHandler(this.failureHandler);
-            }
-            oauth2Login.loginPage(formLogin);
-        });
-    }
+			if (this.successHandler != null) {
+				oauth2Login.successHandler(this.successHandler);
+			}
+			if (this.failureHandler != null) {
+				oauth2Login.failureHandler(this.failureHandler);
+			}
+			oauth2Login.loginPage(formLogin);
+		});
+	}
 }

@@ -30,7 +30,8 @@ Compose передаёт его значения через `env_file`.
 
 ## Docker Compose
 
-Весь стенд запускается одним Compose: frontend/Nginx, backend, PostgreSQL и Redis.
+Весь стенд запускается одним Compose: frontend/Nginx, backend, J resource, Swagger UI,
+PostgreSQL и Redis.
 
 ```bash
 docker compose -f ../../docker-compose.yml up -d --build --wait
@@ -39,6 +40,8 @@ docker compose -f ../../docker-compose.yml ps
 
 - Интерфейс: [http://localhost:8080/login](http://localhost:8080/login).
 - Backend и Actuator: `http://localhost:7777`.
+- Swagger UI: [http://localhost:7778/](http://localhost:7778/).
+- J resource: `http://localhost:9001`; проверяет токены через Nginx.
 - Nginx проксирует POST формы входа, OAuth и API в backend.
 - Backend-образ не содержит React-статику; GET `/login` на порту `7777`
   перенаправляет на frontend.
@@ -83,15 +86,15 @@ java -jar target/j-sso.jar
 Переменные используют формат `${ИМЯ:локальный дефолт}` и могут задаваться
 в окружении или `.env`.
 
-| Переменная | Назначение / локальный дефолт |
-|---|---|
-| `SERVER_PORT` | Порт backend: `7777` |
-| `SPRING_DATASOURCE_URL` | `jdbc:postgresql://localhost:5431/j-sso` |
-| `SPRING_DATASOURCE_USERNAME`, `SPRING_DATASOURCE_PASSWORD` | PostgreSQL: `user` / `user` |
-| `SPRING_DATA_REDIS_HOST`, `SPRING_DATA_REDIS_PORT` | Redis: `localhost:6379` |
-| `SPRING_DATA_REDIS_PASSWORD` | `qwerty12345678` |
-| `APP_FRONTEND_URL` | Пусто — встроенный UI; в Compose — `http://localhost:8080` |
-| `CORS_ALLOWED_ORIGINS` | Разрешённые origins через запятую |
+| Переменная                                                 | Назначение / локальный дефолт                              |
+|------------------------------------------------------------|------------------------------------------------------------|
+| `SERVER_PORT`                                              | Порт backend: `7777`                                       |
+| `SPRING_DATASOURCE_URL`                                    | `jdbc:postgresql://localhost:5431/j-sso`                   |
+| `SPRING_DATASOURCE_USERNAME`, `SPRING_DATASOURCE_PASSWORD` | PostgreSQL: `user` / `user`                                |
+| `SPRING_DATA_REDIS_HOST`, `SPRING_DATA_REDIS_PORT`         | Redis: `localhost:6379`                                    |
+| `SPRING_DATA_REDIS_PASSWORD`                               | `qwerty12345678`                                           |
+| `APP_FRONTEND_URL`                                         | Пусто — встроенный UI; в Compose — `http://localhost:8080` |
+| `CORS_ALLOWED_ORIGINS`                                     | Разрешённые origins через запятую                          |
 
 Адрес backend для Nginx задаёт **`SSO_BACKEND_URL`**: дефолт
 `http://j-sso-sever:7777`. Переопределяйте его в окружении команды Compose или
