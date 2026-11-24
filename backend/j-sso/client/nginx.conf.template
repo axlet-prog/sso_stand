@@ -1,0 +1,50 @@
+server {
+    listen 80;
+    server_name _;
+    root /usr/share/nginx/html;
+    absolute_redirect off;
+
+    resolver 127.0.0.11 valid=5s ipv6=off;
+    set $sso_backend "${SSO_BACKEND_URL}";
+    proxy_set_header Host $http_host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header X-Forwarded-Host $http_host;
+
+    location = /healthz {
+        access_log off;
+        default_type text/plain;
+        return 200 "ok\n";
+    }
+
+    location /static/ {
+        try_files $uri =404;
+    }
+
+    location = / {
+        return 302 /login;
+    }
+
+    location = /login {
+        error_page 418 = @backend;
+        if ($request_method !~ "^(GET|HEAD)$") {
+            return 418;
+        }
+        add_header Cache-Control "no-cache";
+        try_files /static/index.html =404;
+    }
+
+    location = /ui-test {
+        add_header Cache-Control "no-cache";
+        try_files /static/index.html =404;
+    }
+
+    location / {
+        proxy_pass $sso_backend$request_uri;
+    }
+
+    location @backend {
+        proxy_pass $sso_backend$request_uri;
+    }
+}

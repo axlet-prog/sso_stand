@@ -3,7 +3,7 @@
 FROM eclipse-temurin:25-jdk AS build
 WORKDIR /build
 
-COPY ../pom.xml ./pom.xml
+COPY pom.xml ./pom.xml
 
 COPY --chmod=755 j-sso/mvnw ./j-sso/mvnw
 COPY j-sso/.mvn/ ./j-sso/.mvn/
@@ -24,7 +24,8 @@ RUN cp target/j-sso.jar /build/app.jar \
 
 FROM eclipse-temurin:25-jre-alpine
 WORKDIR /app
-RUN addgroup -S app && adduser -S -G app app
+RUN apk add --no-cache curl \
+    && addgroup -S app && adduser -S -G app app
 
 COPY --from=build /build/extracted/dependencies/ ./
 COPY --from=build /build/extracted/spring-boot-loader/ ./

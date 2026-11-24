@@ -4,10 +4,12 @@
 *.iml
 *.ipr
 docker/
-.docker/
 test-files/
 HELP.md
 target/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+
+docs/
+.codex

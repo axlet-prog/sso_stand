@@ -1,0 +1,22 @@
+# Paths are relative to the Compose build context: backend/.
+**
+!pom.xml
+!j-sso/
+!j-sso/pom.xml
+!j-sso/mvnw
+!j-sso/.mvn/
+!j-sso/.mvn/**
+!j-sso/src/
+!j-sso/src/**
+!j-sso/database/
+!j-sso/database/**
+
+**/.env
+**/.env.*
+**/target
+**/node_modules
+**/liquibase.properties
+
+# The Docker deployment serves React from the separate Nginx container.
+j-sso/src/main/resources/static
+j-sso/src/main/resources/templates

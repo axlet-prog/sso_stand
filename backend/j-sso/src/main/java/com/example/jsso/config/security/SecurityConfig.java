@@ -7,6 +7,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -34,7 +35,12 @@ public class SecurityConfig {
 	private AuthenticationFailureHandler failureHandler;
 
 	public static final String LOGIN_PAGE = "/login";
-	public static final String ACTUATOR_ENDPOINTS = "/actuator/**";
+	public static final String[] ACTUATOR_GET_ENDPOINTS = {
+			"/actuator/health",
+			"/actuator/info",
+			"/actuator/metrics",
+			"/actuator/metrics/**"
+	};
 	public static final String[] PERMIT_ALL_PATTERNS = {
 			"/v3/api-docs",
 			"/v3/api-docs/swagger-config",
@@ -42,8 +48,7 @@ public class SecurityConfig {
 			"/favicon.ico",
 			"/.well-known/**",
 			"/static/**",
-			LOGIN_PAGE,
-			ACTUATOR_ENDPOINTS
+			LOGIN_PAGE
 	};
 
 	@Bean
@@ -65,6 +70,7 @@ public class SecurityConfig {
 				)
 				.authorizeHttpRequests(authorize ->
 						authorize
+								.requestMatchers(HttpMethod.GET, ACTUATOR_GET_ENDPOINTS).permitAll()
 								.requestMatchers(
 										PERMIT_ALL_PATTERNS
 								).permitAll()
